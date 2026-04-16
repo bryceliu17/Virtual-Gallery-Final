@@ -1,0 +1,26 @@
+{% extends "layout.html" %} {% block title %}Forbidden{% endblock %} {% block
+content %}
+<section class="card text-center my-5 p-5">
+  <h1 class="display-4">403</h1>
+  <h2>Forbidden</h2>
+
+  {% if user_name %}
+
+  <p class="lead">
+    Hi, <strong>{{ user_name }}</strong>, you don’t have permission to view this
+    page.
+  </p>
+  {% endif %}
+
+  <div class="d-flex flex-column flex-sm-row justify-content-center gap-4 mt-3">
+  <a href="{{ url_for('view.home') }}" class="btn btn-primary btn-lg mt-3 muse-cta"
+  style="min-width: 150px;"
+    >Go to Home</a
+  >
+  <a href="{{ url_for('view.gallery') }}" class="btn btn-outline-secondary btn-lg mt-3 muse-cta"
+  style="min-width: 150px;"
+    >Browse Gallery</a
+  >
+</div>
+</section>
+{% endblock %}

@@ -1,0 +1,323 @@
+{% extends "layout.html" %}
+{% block title %}Checkout{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}" />
+{% endblock %}
+{% block content %}
+{% if order %}
+<h2 class="mb-2">Thanks, {{ order.customer.name }}!</h2>
+<p>Your order <strong>#{{ order.id }}</strong> was received on {{ order.created_at }}.</p>
+
+<h4 class="mt-4">Items</h4>
+<table class="table align-middle">
+  <thead>
+    <tr>
+      <th>Artwork</th>
+      <th>Months</th>
+      <th>Price / month</th>
+      <th>Line total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for line in order['items'] %}
+    <tr>
+      <td>{{ line.art.title }} — {{ line.art.artist }}</td>
+      <td>{{ line.months }}</td>
+      <td class="text-end">${{ '%.2f'|format(line.art.price_per_month|float) }}</td>
+      <td>${{ '%.2f'|format(line.line_total|float) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th colspan="3" class="text-end">Grand total</th>
+      <th class="text-end">${{ '%.2f'|format(order.total|float) }}</th>
+    </tr>
+  </tfoot>
+</table>
+
+{% if order.payment_method %}
+<h4 class="mt-4">Payment</h4>
+<p class="mb-0">Method: <strong>{{ order.payment_method.replace('_', ' ')|title }}</strong></p>
+{% if order.payment_method == 'paypal' and order.get('paypal_email') %}
+<p>PayPal account: <strong>{{ order.paypal_email }}</strong></p>
+{% endif %}
+{% endif %}
+
+<h4 class="mt-4">Contact</h4>
+<p>
+  {{ order.customer.email or '—' }}<br />
+  {{ order.customer.phone or '—' }}<br />
+  {{ order.customer.address or '—' }}
+</p>
+
+<a class="btn btn-primary mt-3 muse-action" href="{{ url_for('view.gallery') }}">Back to Gallery</a>
+
+{% else %}
+{% if items and items|length > 0 %}
+<h3 class="mb-3">Order Summary</h3>
+<table class="table align-middle">
+  <thead>
+    <tr>
+      <th>Artwork</th>
+      <th class="text-center">Months</th>
+      <th class="text-end">Price / month</th>
+      <th class="text-end">Line total</th>
+      <th class="text-center">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for line in items %}
+    <tr>
+      <td>
+        <div class="fw-semibold">{{ line.art.title }}</div>
+        <div class="text-muted small">{{ line.art.artist }}</div>
+      </td>
+
+      <!-- mobile image -->
+      <td class="text-center" style="width: 140px">
+        <form action="{{ url_for('view.checkout_update', aid=line.art.id) }}" method="post" class="d-inline-flex gap-2 mobile-update-wrap">
+          <input
+            class="form-control form-control-sm text-center"
+            type="number"
+            name="months"
+            value="{{ line.months }}"
+            min="1"
+            style="max-width: 90px"
+          />
+
+          <button class="btn btn-sm btn-outline-secondary update-btn" type="submit">Update</button>
+
+          <!-- update icon button -->
+          <input
+            type="image"
+            src="{{ url_for('static', filename='img/update.png') }}"
+            alt="Update"
+            class="icon-btn mobile-img update-img"
+          />
+        </form>
+      </td>
+
+      <td class="text-end">${{ '%.2f'|format(line.art.price_per_month|float) }}</td>
+    <td class="text-end">
+      ${{ '%.2f'|format(line.line_total) }}
+      <div class="mobile-delete-wrap">
+        <form action="{{ url_for('view.checkout_remove', aid=line.art.id) }}" method="post" class="d-inline">
+          <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+        </form>
+      </div>
+    </td>
+    
+      <td class="text-center">
+        <form action="{{ url_for('view.checkout_remove', aid=line.art.id) }}" method="post" class="d-inline">
+          <button class="btn btn-sm btn-outline-danger">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+  <tfoot>
+    <tr>
+      <th colspan="3" class="text-end">
+        <span class="mobile-clear-wrap" aria-hidden="false">
+          <form action="{{ url_for('view.checkout_clear') }}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-sm btn-outline-secondary mobile-clear-btn">Clear</button>
+          </form>
+        </span>
+        Grand total
+      </th>
+
+      <th class="text-end">${{ '%.2f'|format(grand_total) }}</th>
+
+      <th class="text-center">
+        <form action="{{ url_for('view.checkout_clear') }}" method="post" class="d-inline">
+          <button class="btn btn-sm btn-outline-secondary">Clear</button>
+        </form>
+      </th>
+    </tr>
+  </tfoot>
+</table>
+
+<hr class="my-4" />
+
+<form action="{{ url_for('view.checkout') }}" method="post" novalidate>
+  <h3 class="mb-3">Customer details</h3>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label for="name" class="form-label">Full Name *</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        name="name"
+        value="{{ (form and form.name) or '' }}"
+        required
+        minlength="2"
+        maxlength="90"
+        inputmode="text"
+        pattern="^[A-Za-zÀ-ÖØ-öø-ÿ'\\-]{2,}( [A-Za-zÀ-ÖØ-öø-ÿ'\\-]{2,})+$"
+        title="Enter Your first and last name with a space (at least 2 words)"
+        placeholder="Full name"
+      />
+    </div>
+
+    <div class="col-md-6">
+      <label for="email" class="form-label">Email *</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        value="{{ (form and form.email) or '' }}"
+        placeholder="you@example.com"
+        required
+        title="Enter valid email address with @ and '.'"
+      />
+    </div>
+
+    <div class="col-md-6">
+      <label for="phone" class="form-label">Phone</label>
+      <input
+        type="tel"
+        class="form-control"
+        id="phone"
+        name="phone"
+        value="{{ (form and form.phone) or '' }}"
+        placeholder="04xx xxx xxx"
+        pattern="^\\d{10,10}$"
+        title="Australian format only - 10 digits starting with 04"
+        inputmode="numeric"
+        minlength="10"
+        maxlength="10"
+      />
+    </div>
+
+    <div class="col-12">
+      <label for="address" class="form-label">Delivery Address *</label>
+      <input
+        type="text"
+        class="form-control"
+        id="address"
+        name="address"
+        value="{{ (form and form.address) or '' }}"
+        placeholder="Street, suburb, postcode"
+        required
+        title="Enter address with postcode at the end (4 digits)"
+      />
+    </div>
+    <p class="form-label"><small>* mandatory</small></p>
+  </div>
+
+  <hr class="my-4" />
+  <h3 class="mb-3">Payment</h3>
+
+  <p>Select your payment method:</p>
+  <div class="mb-3">
+    <label class="payment-option">
+      <input class="form-check-input" type="radio" name="payment_method" id="pm_card" value="credit_card" required {% if form and form.payment_method == 'credit_card' %} checked {% endif %} checked />
+      <span class="form-check-label">Credit Card</span>
+
+      <div class="payment-box border rounded p-3 mb-3">
+        <h5>Credit Card</h5>
+        <div class="row g-3">
+          <div class="col-md-7">
+            <label for="card_number" class="form-label">Card number</label>
+            <input
+              type="text"
+              class="form-control"
+              id="card_number"
+              name="card_number"
+              placeholder="4242 4242 4242 4242"
+              pattern="^\\d{13,19}$"
+              title="Card number — 16 digits only. Enter without spaces"
+              inputmode="numeric"
+              autocomplete="cc-number"
+              minlength="16"
+              maxlength="16"
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="card_expiry" class="form-label">Expiry (MM/YY)</label>
+            <input
+              type="text"
+              class="form-control"
+              id="card_expiry"
+              name="card_expiry"
+              placeholder="MM/YY"
+              pattern="^(0[1-9]|1[0-2])\/\d{2}$"
+              title="Expiry must be MM/YY (e.g. 12/25)"
+              inputmode="numeric"
+              maxlength="5"
+            />
+          </div>
+          <div class="col-md-2">
+            <label for="card_cvv" class="form-label">CVV</label>
+            <input
+              type="text"
+              class="form-control"
+              id="card_cvv"
+              name="card_cvv"
+              placeholder="123"
+              pattern="^\\d{3,4}$"
+              title="CVV — 3 digits only"
+              inputmode="numeric"
+              minlength="3"
+              maxlength="3"
+              autocomplete="cc-csc"
+            />
+          </div>
+        </div>
+      </div>
+    </label>
+
+    <label class="payment-option">
+      <input class="form-check-input" type="radio" name="payment_method" id="pm_paypal" value="paypal" {% if form and form.payment_method == 'paypal' %} checked {% endif %} />
+      <span class="form-check-label">PayPal</span>
+
+      <div class="payment-box border rounded p-3 mb-3">
+        <h5>PayPal</h5>
+        <div class="mb-3">
+          <label for="paypal_email" class="form-label">PayPal email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="paypal_email"
+            name="paypal_email"
+            placeholder="you@paypal.com"
+            value="{{ (form and form.paypal_email) or '' }}"
+            title="Enter valid email address with @ and '.'"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="paypal_password" class="form-label">PayPal password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="paypal_password"
+            name="paypal_password"
+            placeholder="********"
+            minlength="6"
+            title="PayPal password — minimum 6 characters"
+          />
+        </div>
+      </div>
+    </label>
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <button type="submit" class="btn btn-outline-secondary muse-action">Submit order</button>
+    &nbsp; &nbsp;
+    <a class="btn btn-outline-secondary muse-action" href="{{ url_for('view.gallery') }}">Continue browsing</a>
+  </div>
+</form>
+
+{% else %}
+<div class="alert alert-info">
+  Your basket is empty.
+  <a href="{{ url_for('view.gallery') }}" class="alert-link">Back to gallery</a>.
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

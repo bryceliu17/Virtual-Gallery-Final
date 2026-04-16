@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<form class="row g-3 mb-4" method="get" action="{{ url_for('view.gallery') }}">
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <label class="form-label">Search</label>
+    <input class="form-control" type="text" name="q"
+           value="{{ request.args.get('q','') }}"
+           placeholder="title, keywords…">
+  </div>
+
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <label class="form-label">Artist</label>
+    <select class="form-select" name="artist">
+      <option value="">Any</option>
+      {% for a in artists %}
+        <option value="{{ a }}" {{ 'selected' if request.args.get('artist')==a else '' }}>
+          {{ a }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <label class="form-label">Category</label>
+    <select class="form-select" name="category">
+      <option value="">Any</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {{ 'selected' if request.args.get('category')==c else '' }}>
+          {{ c }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <label class="form-label">Max $/month</label>
+    <input class="form-control" type="number" name="max_price" min="0" step="1"
+           value="{{ request.args.get('max_price','') }}">
+  </div>
+
+  <div class="col-12 d-flex flex-wrap gap-2">
+    <button class="btn btn-primary">Apply Filters</button>
+    <a class="btn btn-outline-secondary" href="{{ url_for('view.home') }}">Clear</a>
+  </div>
+</form>
+
+{% if artworks %}
+  <h2 class="text-center m-2">Gallery</h2>
+  <div class="row g-4 home-gallery">
+    {% for art in artworks %}
+  <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+    <a href="{{ url_for('view.item_details', aid=art.id) }}" class="text-decoration-none">
+      <img class="img-fluid w-100"
+           src="{{ url_for('static', filename=art.img) }}"
+           alt="{{ art.title }}">
+      <h5 class="mt-2">{{ art.title }}</h5>
+      <p class="mb-0 text-muted" style="font-size: 96%;">
+        <a href="{{ url_for('view.artist_portfolio') }}" 
+           class="muse-link">
+          {{ art.artist }}
+        </a> <br/>
+       from ${{ art.price_per_month }}/month
+      </p>
+    </a>
+  </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-warning">No results. Try broadening your filters.</div>
+{% endif %}
+{% endblock %}

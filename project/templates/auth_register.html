@@ -1,0 +1,100 @@
+{% extends "layout.html" %} {% block title %}Register · Muse Gallery{% endblock
+%} {% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5 auth-authcol">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="h4 text-center mb-4 muse">Create your account</h1>
+
+          <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+              {{ form.name.label(class="form-label") }} {{
+              form.name(class="form-control" + (" is-invalid" if
+              form.name.errors else ""), placeholder="Jane Doe") }} {% if
+              form.name.errors %}
+              <div class="invalid-feedback">
+                {{ "; ".join(form.name.errors) }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.email.label(class="form-label") }} {{
+              form.email(class="form-control" + (" is-invalid" if
+              form.email.errors else ""), placeholder="name@example.com") }} {%
+              if form.email.errors %}
+              <div class="invalid-feedback">
+                {{ "; ".join(form.email.errors) }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.phone.label(class="form-label") }} {{
+              form.phone(class="form-control" + (" is-invalid" if
+              form.phone.errors else ""), placeholder="04xx xxx xxx") }} {% if
+              form.phone.errors %}
+              <div class="invalid-feedback">
+                {{ "; ".join(form.phone.errors) }}
+              </div>
+              {% endif %}
+              <div class="form-text">
+                Provide email or phone (at least one).
+              </div>
+            </div>
+
+            <div class="mb-3">
+              {{ form.role.label(class="form-label") }} {{
+              form.role(class="form-select" + (" is-invalid" if form.role.errors
+              else "")) }} {% if form.role.errors %}
+              <div class="invalid-feedback">
+                {{ "; ".join(form.role.errors) }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.password.label(class="form-label") }}
+              <div class="input-group">
+                {{ form.password(class="form-control" + (" is-invalid" if
+                form.password.errors else ""), id=form.password.id or
+                "password") }} {% if form.password.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ "; ".join(form.password.errors) }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mb-4">
+              {{ form.confirm.label(class="form-label") }}
+              <div class="input-group">
+                {{ form.confirm(class="form-control" + (" is-invalid" if
+                form.confirm.errors else ""), id=form.confirm.id or "confirm")
+                }} {% if form.confirm.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ "; ".join(form.confirm.errors) }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              {{ form.submit(class="btn btn-primary btn-lg muse-cta") }}
+              <a
+                href="{{ url_for('view.login') }}"
+                class="btn btn-link muse-link"
+                >I already have an account</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+@media (min-width: 500px) {
+    .row.g-4 {
+      gap: 4rem !important; 
+    }
+    .row.g-4 > [class*="col-"] img {
+      width: 130% !important;  
+      max-width: none !important;
+      transform: translateX(-2.5%);
+    }   
+  }
+  .row.g-4 > [class*="col-"] a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .row.g-4 > [class*="col-"] img:hover { transform: scale(1.03) translateY(-2px); }

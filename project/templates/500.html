@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}500 Server Error{% endblock %}
+
+{% block content %}
+<section class="card text-center my-5 p-5">
+    <h1 class="display-1">500</h1>
+    <h2>Internal Server Error</h2>
+    <p class="lead">Oops! Something went wrong on our server.</p>
+    <p>Please try again in a few moments, or contact support if the issue persists.</p>
+    <div class="d-flex flex-column flex-sm-row justify-content-center gap-4 mt-3">
+    <a href="{{ url_for('view.home') }}" class="btn btn-primary btn-lg mt-3 muse-cta">Go to Home</a>
+    </div>
+</section>
+{% endblock %}

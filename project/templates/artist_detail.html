@@ -1,0 +1,76 @@
+{% extends "layout.html" %} {% block title %}{{ artist.name }} · Portfolio{%
+endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/artist_detail.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="container">
+  <div class="mb-4">
+    <a href="{{ url_for('view.artist_portfolio') }}" class="muse-link">
+      &larr; Back to All Artists
+    </a>
+  </div>
+
+  <div class="row mb-5 align-items-start flex-md-row flex-column-reverse">
+    <div class="col-12 col-md-4 order-md-1 mb-4 mb-md-0">
+      <img
+        src="{{ url_for('static',
+        filename=(artist.image if artist.image and artist.image.startswith('img/')
+                  else ('img/' ~ (artist.image or 'placeholder.png'))) ) }}"
+        class="img-fluid rounded shadow-sm w-100"
+        alt="{{ artist.name }}"
+        style="aspect-ratio: 9 / 16; object-fit: cover; max-height: 600px"
+      />
+    </div>
+    <div class="col-12 col-md-8 order-md-2">
+      <h1 class="display-5 mb-3">{{ artist.name }}</h1>
+      <p class="lead text-muted mb-3 badge-lg-font">{{ artist.specialty }}</p>
+      <div class="mb-4">
+        <span class="badge text-bg-light me-2 badge-lg">{{ artist.medium }}</span>
+        <span class="badge text-bg-light badge-lg">{{ artist.style }}</span>
+      </div>
+      <p class="mb-4 desc-lg">{{ artist.bio }}</p>
+
+      <div class="artist-contact">
+        <h3 class="mb-3">Artist Information</h3>
+        <ul class="list-unstyled">
+          <li class="mb-2 badge-lg-font"><strong>Style:</strong> {{ artist.style }}</li>
+          <li class="mb-2 badge-lg-font"><strong>Medium:</strong> {{ artist.medium }}</li>
+          <li class="mb-2 badge-lg-font">
+            <strong>Years Active:</strong> {{ artist.experienceYears }}
+          </li>
+          <li class="mb-2 badge-lg-font"><strong>Location:</strong> {{ artist.location }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="mb-4">Featured Artworks</h3>
+  {% if artworks %}
+  <div class="row g-4">
+    {% for art in artworks %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <a
+        href="{{ url_for('view.item_details', aid=art.id) }}"
+        class="text-decoration-none"
+      >
+        <img
+          class="img-fluid w-100 rounded shadow-sm"
+          src="{{ url_for('static', filename=art.img) }}"
+          alt="{{ art.title }}"
+          style="height: 200px; object-fit: cover"
+        />
+        <h5 class="mt-2">{{ art.title }}</h5>
+        <p class="mb-0 text-muted">${{ art.price_per_month }}/month</p>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    No artworks currently available from this artist.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

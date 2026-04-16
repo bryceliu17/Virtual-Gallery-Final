@@ -1,0 +1,78 @@
+{% extends "layout.html" %} {% block title %}Admin Dashboard{% endblock %} {%
+block content %}
+<div class="container py-5">
+  <h1 class="h3 mb-4">Admin Dashboard</h1>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-6 col-lg-4">
+      <div class="card p-4 text-center h-100">
+        <h4 class="card-title text-success">Total Registered Artists</h4>
+        <p class="display-4 fw-bold">{{ artist_count }}</p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card p-4 text-center h-100">
+        <h4 class="card-title text-info">Total Customer Orders</h4>
+        <p class="display-4 fw-bold">{{ order_count }}</p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card p-4 text-center h-100">
+        <h4 class="card-title text-danger">Artwork Management</h4>
+        <p class="display-4 fw-bold"><i class="bi bi-palette"></i></p>
+        <a
+          href="{{ url_for('view.vendor_manage') }}"
+          class="btn btn-sm btn-outline-danger"
+          >Go to Management</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <h4 class="mt-5 mb-3 text-success">Registered Artist Details</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for artist in all_artists %}
+      <tr>
+        <td>{{ artist.artistId }}</td>
+        <td>{{ artist.name }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h4 class="mt-5 mb-3 text-info">Submitted Customer Orders</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>User ID</th>
+        <th>Total Amount</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in submitted_orders %}
+      <tr>
+        <td>{{ order.orderId }}</td>
+        <td>{{ order.userId }}</td>
+        <td>${{ "%.2f"|format(order.totalAmount|float) }}</td>
+        <td>
+          <span class="badge text-bg-secondary">{{ order.status|title }}</span>
+        </td>
+        <td>{{ order.orderDate.strftime('%Y-%m-%d %H:%M') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

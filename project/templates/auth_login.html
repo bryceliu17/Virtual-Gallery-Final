@@ -1,0 +1,52 @@
+{% extends "layout.html" %} {% block title %}Login · Muse Gallery{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4 auth-authcol">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="h4 text-center mb-4 muse">Sign in</h1>
+
+          <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+              {{ form.email.label(class="form-label") }} {{
+              form.email(class="form-control" + (" is-invalid" if
+              form.email.errors else ""), placeholder="name@example.com") }} {%
+              if form.email.errors %}
+              <div class="invalid-feedback">
+                {{ "; ".join(form.email.errors) }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-4">
+              {{ form.password.label(class="form-label") }}
+              <div class="input-group">
+                {{ form.password(class="form-control" + (" is-invalid" if
+                form.password.errors else ""), id=form.password.id or
+                "login_password") }} {% if form.password.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ "; ".join(form.password.errors) }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              {{ form.submit(class="btn btn-primary btn-lg muse-cta") }}
+              <a
+                href="{{ url_for('view.register') }}"
+                class="btn btn-link muse-link"
+                >Create account</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

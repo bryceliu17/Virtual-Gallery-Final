@@ -1,0 +1,70 @@
+{% extends "layout.html" %} {% block title %}{{ art.title if art else "Item not
+found" }} · Muse Gallery{% endblock %} 
+ {% block content %} {% if not art %}
+<div class="alert alert-warning">
+  Sorry, that item wasn’t found.
+  <a href="{{ url_for('view.gallery') }}">Back to gallery</a>.
+</div>
+{% else %}
+<div class="row g-4">
+  <div class="col-12 col-md-6">
+    <img
+      class="img-fluid rounded shadow-sm w-100"
+      src="{{ url_for('static', filename=art.img) }}"
+      alt="{{ art.title }}"
+    />
+  </div>
+
+  <div class="col-12 col-md-6">
+    <h2 class="mb-1">{{ art.title }}</h2>
+    <p class="text-muted mb-3">by 
+      <a href="{{ url_for('view.artist_portfolio') }}" class="muse-link">
+        {{ art.artist }}
+      </a>
+    </p>
+    
+
+    {% if art.category %}
+    <span class="badge text-bg-light mb-3 badge-lg">{{ art.category }}</span>
+    {% endif %}
+
+    <p class="mb-4 desc-lg">{{ art.desc }}</p>
+
+    <div class="d-flex align-items-baseline gap-2 mb-4">
+      <span class="fs-4 fw-semibold"
+        >${{ "%.2f"|format(art.price_per_month) }}</span
+      >
+      <span class="text-muted">per month</span>
+    </div>
+
+    <form action="{{ url_for('view.checkout_add', aid=art.id) }}" method="post">
+      <div class="mb-3">
+        <label for="leaseDuration" class="form-label">Lease duration</label>
+        <select id="leaseDuration" name="months" class="form-select" required>
+          <option value="0" selected>Choose…</option>
+          <option value="1">
+            1 month – ${{ "%.2f"|format(art.price_per_month * 1) }}
+          </option>
+          <option value="3">
+            3 months – ${{ "%.2f"|format(art.price_per_month * 3) }}
+          </option>
+          <option value="6">
+            6 months – ${{ "%.2f"|format(art.price_per_month * 6) }}
+          </option>
+          <option value="12">
+            12 months – ${{ "%.2f"|format(art.price_per_month * 12) }}
+          </option>
+        </select>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Add to Basket</button>
+        <a
+          class="btn btn-outline-secondary"
+          href="{{ url_for('view.gallery') }}"
+          >Back to Gallery</a
+        >
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %} {% endblock %}

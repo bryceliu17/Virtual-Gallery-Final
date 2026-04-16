@@ -1,0 +1,71 @@
+/* switching between payment options */
+.payment-box { display: none; }
+ #pm_card:checked ~ .payment-box { display: block; }
+ #pm_paypal:checked ~ .payment-box { display: block; }
+ .payment-option { display: block; margin-bottom: 0.5rem; }
+ .payment-option .form-check-label { margin-left: 0.5rem; display: inline-block; }
+ .payment-box {
+  box-shadow: 4px 8px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  background: #faf8f6;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.payment-box:hover {
+  transform: translateY(-2px);
+}
+
+/* hiding mobile elements on desktop */
+.mobile-img,
+.mobile-clear-wrap,
+.mobile-delete-wrap {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  /* hiding desktop actions column */
+  .table thead th:last-child,
+  .table tbody td:last-child,
+  .table tfoot th:last-child {
+    display: none !important;
+  }
+  /* showing mobile image */
+  .mobile-img,
+  .mobile-clear-wrap {
+    display: inline-block !important;
+    vertical-align: middle !important;
+  }
+  /* hiding desktop update button */
+  .update-btn {
+    display: none !important;
+  }
+  input[type="image"].icon-btn,
+  .icon-btn {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    border: none !important;
+    transition: transform 0.2s ease;
+  }
+  .mobile-update-wrap {
+    align-items: center !important;
+  } 
+  .table .form-control[type="number"] {
+    max-width: 50px !important;
+    min-width: 35px !important;
+    font-size: 1rem !important;
+    padding: 0.35rem 0.3rem !important;
+  }
+  .mobile-clear-btn {
+    padding: 0.22rem 1rem!important;
+    margin-right: 40px !important;
+  }
+  input[type="image"].icon-btn:hover,
+  .icon-btn:hover {
+  transform: scale(1.35);
+  }
+  .mobile-delete-wrap {
+     display: block; 
+     margin-bottom: -1.8rem; 
+     text-align: center; 
+    }
+}
